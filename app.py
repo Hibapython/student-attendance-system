@@ -47,12 +47,15 @@ COLLEGE_NAME = "Bharathidasan Government College for Women"
 
 # ─── MySQL connection settings — edit these to match your MySQL Workbench ────
 import os
+import mysql.connector
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = int(os.getenv("DB_PORT", 3306))
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
+db = mysql.connector.connect(
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT"))
+)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
