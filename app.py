@@ -59,13 +59,13 @@ DB_NAME = os.getenv("DB_NAME")
 def get_db():
     """Open and return a MySQL connection with dictionary cursor support."""
     return mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
-        autocommit=False,
+    host=DB_HOST,
+    port=DB_PORT,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    database=DB_NAME,
+    autocommit=False,
     )
-
 
 def qry(conn, sql, params=(), many=False, one=False, commit=False):
     """
@@ -1203,11 +1203,14 @@ def save_marks():
 
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    import os
+
+    port = int(os.environ.get("PORT", 5000))
+
     print("\n" + "="*60)
     print(f"  {APP_NAME}")
     print(f"  MySQL: {DB_HOST} / {DB_NAME}")
-    # Avoid UnicodeEncodeError on Windows consoles using legacy code pages
-    print("  Open browser -> http://127.0.0.1:5000")
+    print(f"  Running on port {port}")
     print("="*60 + "\n")
-    # Bind all interfaces so http://127.0.0.1:5000 and http://localhost:5000 both reach this app.
-    app.run(debug=True, host="0.0.0.0", port=5000)
+
+    app.run(debug=True, host="0.0.0.0", port=port)
