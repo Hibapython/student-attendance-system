@@ -47,27 +47,27 @@ COLLEGE_NAME = "Bharathidasan Government College for Women"
 
 # ─── MySQL connection settings — edit these to match your MySQL Workbench ────
 import os
-import mysql.connector
 
-db = mysql.connector.connect(
-    host=os.getenv("DB_HOST"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD"),
-    database=os.getenv("DB_NAME"),
-    port=int(os.getenv("DB_PORT"))
-)
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = int(os.getenv("DB_PORT", "19430"))
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
 # ─────────────────────────────────────────────────────────────────────────────
 
+print("DB_HOST:", DB_HOST)
+print("DB_PORT:", DB_PORT)
+print("DB_NAME:", DB_NAME)
 
 def get_db():
     """Open and return a MySQL connection with dictionary cursor support."""
     return mysql.connector.connect(
-    host=DB_HOST,
-    port=DB_PORT,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    database=DB_NAME,
-    autocommit=False,
+        host=DB_HOST,
+        port=int(DB_PORT),
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        autocommit=False,
     )
 
 def qry(conn, sql, params=(), many=False, one=False, commit=False):
