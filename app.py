@@ -913,14 +913,15 @@ def submit():
         cur  = conn.cursor()
         cur.execute("""
             INSERT INTO student_biodata (
-                full_name, dob, roll_no, exam_reg, class_sec,
+                student_id, full_name, dob, roll_no, exam_reg, class_sec,
                 mother_name, father_name, mother_occ, father_occ,
                 res_address, bus_address, primary_phone, alt_phone,
                 school_name, category, group_studied, hsc_marks,
                 scholarship, extra_curric, add_qual,
                 ncc_sports, achievements, hobbies, blood_group, hostel, photo
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """, (
+            fv("student_id"),   # ✅ ADD THIS LINE
             fv("full_name"), fv("dob"), fv("roll_no"), fv("exam_reg"), fv("class_sec") or "",
             fv("mother_name") or "", fv("father_name") or "", fv("mother_occ"), fv("father_occ"),
             fv("res_address"), fv("bus_address") or "",
@@ -1010,7 +1011,7 @@ def save_attendance():
         saved = 0
         for rec in records:
             rn = rec.get("roll_number")
-            sn = rec.get("student_name", "")
+            sn = rec.get("student_name")
             if rn is None: continue
             h  = {f"h{i}": rec.get(f"h{i}", "A") for i in range(1, 7)}
             tp = sum(1 for v in h.values() if v == "P")
@@ -1019,19 +1020,19 @@ def save_attendance():
 
             cur.execute("""SELECT attendance_id FROM attendance
                 WHERE roll_number=%s AND date=%s AND semester_number=%s LIMIT 1""",
-                (rn, date_str, sem))
+                (rn, sn, date_str, sem))
             ex = cur.fetchone()
 
             if ex:
                 cur.execute("""UPDATE attendance SET
-                    student_name=%s, h1=%s,h2=%s,h3=%s,h4=%s,h5=%s,h6=%s,
+                    h1=%s,h2=%s,h3=%s,h4=%s,h5=%s,h6=%s,
                     total_present=%s,total_absent=%s,total_late=%s,month=%s,year=%s
                     WHERE attendance_id=%s""",
                     (sn, h["h1"],h["h2"],h["h3"],h["h4"],h["h5"],h["h6"],
                      tp, ta, tl, month_name, year, ex["attendance_id"]))
             else:
                 cur.execute("""INSERT INTO attendance
-                    (roll_number,student_name,h1,h2,h3,h4,h5,h6,
+                    (student_id,h1,h2,h3,h4,h5,h6,
                      total_present,total_absent,total_late,date,month,year,semester_number)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (rn, sn, h["h1"],h["h2"],h["h3"],h["h4"],h["h5"],h["h6"],
