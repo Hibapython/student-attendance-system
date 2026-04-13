@@ -46,10 +46,13 @@ APP_NAME     = "BGCGW Student Attendance & Mark Register"
 COLLEGE_NAME = "Bharathidasan Government College for Women"
 
 # ─── MySQL connection settings — edit these to match your MySQL Workbench ────
-DB_HOST = "localhost"
-DB_USER = "root"
-DB_PASSWORD = "YOUR_PASSWORD"       # <-- change to your MySQL root password
-DB_NAME = "attendance_system"
+import os
+
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = int(os.getenv("DB_PORT", 3306))
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
 # ─────────────────────────────────────────────────────────────────────────────
 
 
