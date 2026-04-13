@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">`
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <style>
+        .form-control {
+            border: 1px solid black;
+        }
+
+        .res {
+            border: 1px solid black;
+        }
+
+        #photo-frame {
+            width: 150px;
+            /* Standard passport width ratio */
+            height: 180px;
+            /* Standard passport height ratio */
+            border: 2px dashed #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            margin-left: 200px;
+        }
+
+        #passport-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* This ensures the photo fills the box without stretching */
+        }
+    </style>
+</head>
+
+
+<body style="background: linear-gradient(180deg, #faf8fc 0%, #f5d7ff 30%, #ffffff 100%)">
+    <h1 style="text-align: center; margin-top: 40px;">Application Form</h1>
+    <div class="conatiner p-4 shadow-lg rounded bg-white"
+        style="border: 1px solid black; margin-left: 200px; margin-right: 200px; margin-top: 50px; margin-bottom: 50px;">
+        <div class="container w-200">
+            <h4 style="text-align: center; padding-bottom: 50px;">BHARATHIDASAN GOVT COLLEGE FOR WOMEN
+                (AUTONOMOUS)<br>PUDUCHERRY<BR>STUDENT BIO-DATA</h4>
+            <form method="POST" action="{{ url_for('submit') }}" enctype="multipart/form-data" class="needs-validation row g-3" novalidate>
+                <div class="row">
+                    <div class="col">
+                        <h4 style="padding-left: 230px; text-align: center; color: white;">.....</h4>
+                        <h5 style="padding-left: 200px; text-align: center; color: white;">.....</h><br>
+                    </div>
+                    <div class="col ">
+                        <div class="passport-container">
+                            <div id="photo-frame">
+                                <img id="passport-preview" src="" alt="Passport Photo" style="display:none;">
+                                <i class="bi-camera-fill"></i><span id="placeholder-text">Photo Preview</span>
+                            </div>
+
+                            <input type="file" id="photo" name="photo" accept="image/*" style="margin-left: 200px;" required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <label for="full_name" class="form-label"><i class="bi bi-person-fill"></i> <b>Name :</b></label>
+                    <input type="text" class="form-control w-75" id="full_name" name="full_name"
+                        placeholder="Enter your full name" required>
+                    <div class="invalid-feedback">Please enter your full name.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="dob" class="form-label"><i class="bi bi-calendar-date-fill"></i> <b>Date of Birth
+                            :</b></label>
+                    <input type="date" class="form-control w-75" id="dob" name="dob"
+                        placeholder="Enter your date of birth" required>
+                    <div class="invalid-feedback">Please enter your Date of Birth.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="roll_no" class="form-label"><i class="bi bi-person-fill"></i> <b>Roll No :</b></label>
+                    <input type="number" class="form-control w-75" id="roll_no" name="roll_no"
+                        placeholder="Enter your roll number" required>
+                    <div class="invalid-feedback">Please enter your roll no.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="exam_reg" class="form-label"><i class="bi bi-file-earmark-text-fill"></i> <b>Exam Reg
+                            No :</b></label>
+                    <input type="text" class="form-control w-75" id="exam_reg" name="exam_reg"
+                        placeholder="Enter your exam registration number" required>
+                    <div class="invalid-feedback">Please enter your exam registration number.</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="class_sec" class="form-label"><i class="bi bi-easel-fill"></i> <b>Class & Section
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="class_sec" name="class_sec"
+                        placeholder="Enter your class and section" required>
+                    <div class="invalid-feedback">Please enter your class and section.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="mother_name" class="form-label"><i class="bi bi-person-fill"></i> <b>Mother's Name
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="mother_name" name="mother_name"
+                        placeholder="Enter your Mother's name" required>
+                    <div class="invalid-feedback">Please enter your Mother's name.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="father_name" class="form-label"><i class="bi bi-person-fill"></i>
+                        <b>Father's/Guardian Name :</b></label>
+                    <input type="text" class="form-control w-75" id="father_name" name="father_name"
+                        placeholder="Enter your Father's or Guardian name" required>
+                    <div class="invalid-feedback">Please enter your Father's or Guardian name.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="mother_occ" class="form-label"><i class="bi bi-briefcase-fill"></i> <b>Mother's
+                            Occupation :</b></label>
+                    <input type="text" class="form-control w-75" id="mother_occ" name="mother_occ"
+                        placeholder="Enter your Mother's occupation" required>
+                    <div class="invalid-feedback">Please enter your Mother's Occupation.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="father_occ" class="form-label"><i class="bi bi-briefcase-fill"></i>
+                        <b>Father's/Guardian Occupation :</b></label>
+                    <input type="text" class="form-control w-75" id="father_occ"
+                        name="father_occ" placeholder="Enter your Father's or Guardian occupation"
+                        required>
+                    <div class="invalid-feedback">Please enter your Father's or guardian Occupation.</div>
+
+                </div>
+
+                <div class="container p-4 mt-4 w-100 res">
+
+                    <div class="row g-4">
+
+                        <!-- Left Address -->
+                        <div class="col-12 col-md-6"> <i class="bi bi-geo-alt-fill"></i>
+                            <label for="res_address" class="form-label fw-bold">
+                                <b>Residential Address: </b>
+                            </label>
+                            <textarea id="res_address" class="form-control w-100" rows="8"
+                                name="res_address" placeholder="Enter residential address" required></textarea>
+                            <div class="invalid-feedback">Please enter your Full Residential Address.</div>
+                        </div>
+
+                        <!-- Right Address -->
+                        <div class="col-12 col-md-6"> <i class="bi bi-geo-alt-fill"></i>
+                            <label for="bus_address" class="form-label fw-bold">
+                                <b>Father / Guardian Office / Business Address:</b>
+                            </label>
+                            <textarea id="bus_address" class="form-control w-100" rows="8" name="bus_address"
+                                placeholder="Enter business address" required></textarea>
+                            <div class="invalid-feedback">Please enter your Father or Guardian or Business Address.
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="container mt-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <label for="phone" class="col-form-label fw-bold "><i
+                                                    class="bi bi-telephone-fill"></i> <b>Phone :</b></label>
+                                        </div>
+                                        <div class="col">
+                                            <input type="tel" id="primary_phone" class="form-control w-75" name="primary_phone"
+                                                placeholder="Enter your Phone number" maxlength="14"
+                                                pattern="^(\+91\s?)?[6-9]\d{9}$"
+                                                oninput="this.value=this.value.replace(/[^+\d\s]/g,'')" required>
+                                            <div class="invalid-feedback">Please enter your Phone number.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="container mt-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <label for="alt_phone" class="col-form-label fw-bold"><i
+                                                    class="bi bi-telephone-fill"></i> <b>Phone :</b></label>
+                                        </div>
+                                        <div class="col">
+                                            <input type="tel" id="alt_phone" class="form-control w-75" name="alt_phone"
+                                                placeholder="Enter your Aternate Phone number" maxlength="14"
+                                                pattern="^(\+91\s?)?[6-9]\d{9}$"
+                                                oninput="this.value=this.value.replace(/[^+\d\s]/g,'')" required>
+                                            <div class="invalid-feedback">Please enter your Alternate phone number.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="col-md-6">
+                    <label for="school_name" class="form-label"><i class="bi bi-building-fill"></i> <b>School Studied
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="school_name" name="school_name"
+                        placeholder="Enter your school name" required>
+                    <div class="invalid-feedback">Please enter your School where you have studied.</div>
+                </div>
+                <div class="col-md-6">
+
+                    <label for="category" class="form-label"><i class="bi bi-tags-fill"></i> <b>Catogory
+                            :</b></label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categoryFC" required
+                            value="FC">
+                        <label class="form-check-label" for="categoryFC">FC</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categoryBC" required
+                            value="BC">
+                        <label class="form-check-label" for="categoryBC">BC</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categorySC" required
+                            value="SC">
+                        <label class="form-check-label" for="categorySC">SC</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categoryST" required
+                            value="ST">
+                        <label class="form-check-label" for="categoryST">ST</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categoryOthers" required
+                            value="Others">
+                        <label class="form-check-label" for="categoryOthers">Others</label>
+                    </div>
+                    <div class="invalid-feedback">Please enter your caste.</div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <label for="group_studied" class="form-label"><i class="bi bi-book-half"></i> <b>Group Studied
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="group_studied" name="group_studied"
+                        placeholder="Enter your Group" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="scholarship" class="form-label"><i class="bi bi-cas-coin"></i> <b>Scholarship
+                            Details :</b></label>
+                    <input type="text" class="form-control w-75" id="scholarship" name="scholarship"
+                        placeholder="Enter your details" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="hsc_marks" class="form-label"><i class="bi bi-clipboard-data-fill"></i> <b>Marks in
+                            Hr.Secondary School :</b></label>
+                    <input type="number" class="form-control w-75" id="hsc_marks" name="hsc_marks"
+                        placeholder="Enter your HSC marks" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="extra_curric" class="form-label"><i class="bi bi-trophy-fill"></i> <b>Extra
+                            Curricular :</b></label>
+                    <input type="text" class="form-control w-75" id="extra_curric" name="extra_curric"
+                        placeholder="Enter your extra activity" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="add_qual" class="form-label"><i class="bi bi-mortarboard-fill"></i>
+                        <b>Additional Qualifications
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="add_qual" name="add_qual"
+                        placeholder="Enter your Qualifications">
+                </div>
+                <div class="col-md-6">
+                    <label for="ncc_sports" class="form-label"><i class="bi bi-dribbble"></i> <b>NCC/NSS/Sports
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="ncc_sports" name="ncc_sports"
+                        placeholder="Enter your sports" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="achievements" class="form-label"><i class="bi bi-gem"></i><b>Achievements :</b></label>
+                    <input type="text" class="form-control w-75" id="achievements" name="achievements"
+                        placeholder="Enter your Achievements" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="hobbies" class="form-label"><i class="bi bi-music-note-beamed"></i> <b>Hobbies
+                            :</b></label>
+                    <input type="text" class="form-control w-75" id="hobbies" name="hobbies"
+                        placeholder="Enter your Hobbies" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="blood_group" class="form-label"><i class="bi bi-droplet-fill"></i> <b>Blood Group:
+                        </b></label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_o_plus" required
+                            value="O+ve">
+                        <label class="form-check-label" for="blood_group_o_plus">O+ve</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_o_minus"
+                            required value="O-ve">
+                        <label class="form-check-label" for="blood_group_o_minus">O-ve</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_a_plus" required
+                            value="A+ve">
+                        <label class="form-check-label" for="blood_group_a_plus">A+ve</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_a_minus"
+                            required value="A-ve">
+                        <label class="form-check-label" for="blood_group_a_minus">A-ve</label>
+                    </div>
+                    <br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_b_plus" required
+                            value="B+ve">
+                        <label class="form-check-label" for="blood_group_b_plus">B+ve</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_b_minus"
+                            required value="B-ve">
+                        <label class="form-check-label" for="blood_group_b_minus">B-ve</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_ab_plus"
+                            required value="AB+ve">
+                        <label class="form-check-label" for="blood_group_ab_plus">AB+ve</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="blood_group" id="blood_group_ab_minus"
+                            required value="AB-ve">
+                        <label class="form-check-label" for="blood_group_ab_minus">AB-ve</label>
+                    </div>
+                    <div class="invalid-feedback">Please select your blood Group.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="hostel" class="form-label"><i class="bi bi-house-door-fill"></i> <b>Hostel:
+                        </b></label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="hostel" id="hostel_yes" required value="Yes">
+                        <label class="form-check-label" for="hostel_yes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="hostel" id="hostel_no" required value="No">
+                        <label class="form-check-label" for="hostel_no">No</label>
+                    </div>
+
+                    <div class="invalid-feedback">Please select your hostel status.</div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="text-center mt-4 mb-4">
+                    <button type="submit" class="btn btn-primary btn-md w-50" id="submitBtn">Register</button>
+                    <button class="btn btn-primary btn-md w-50" type="button" id="loadingBtn" disabled
+                        style="display: none;">
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span class="ms-2">Loading...</span>
+                    </button>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Success</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                    <p class="mt-3">Form submitted successfully!</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        // IMAGE PREVIEW
+        document.getElementById('photo').addEventListener('change', function () {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('passport-preview').src = e.target.result;
+                document.getElementById('passport-preview').style.display = "block";
+                document.getElementById('placeholder-text').style.display = "none";
+            }
+            reader.readAsDataURL(this.files[0]);
+        });
+
+        // FORM SUBMIT
+        // IMAGE PREVIEW
+    document.getElementById('photo').addEventListener('change', function () {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('passport-preview').src = e.target.result;
+            document.getElementById('passport-preview').style.display = "block";
+            document.getElementById('placeholder-text').style.display = "none";
+        }
+        reader.readAsDataURL(this.files[0]);
+    });
+
+    // FORM SUBMIT (SHOW POPUP + RESET FORM)
+    document.querySelector("form").addEventListener("submit", function (e) {
+    e.preventDefault(); // stop normal submit
+
+    const form = this;
+    const formData = new FormData(form);
+
+    // show loading
+    document.getElementById("submitBtn").style.display = "none";
+    document.getElementById("loadingBtn").style.display = "inline-block";
+
+    fetch("{{ url_for('submit') }}", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+
+            // show success modal
+            const successModal = new bootstrap.Modal(
+                document.getElementById("successModal")
+            );
+            successModal.show();
+
+            // clear form AFTER save
+            form.reset();
+
+            // reset image preview
+            document.getElementById("passport-preview").style.display = "none";
+            document.getElementById("placeholder-text").style.display = "inline";
+        } else {
+            alert("Failed to save data");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Server error");
+    })
+    .finally(() => {
+        document.getElementById("submitBtn").style.display = "inline-block";
+        document.getElementById("loadingBtn").style.display = "none";
+    });
+});
+    </script>
+
+</body>
+
+</html>

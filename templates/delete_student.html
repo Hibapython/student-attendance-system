@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Delete Student | {{ app_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/delete_student.css') }}"
+    />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand-link" href="{{ url_for('dashboard') }}" aria-label="Back to dashboard">
+            <div class="brand-mark" aria-hidden="true">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="brand-title">Delete Student</div>
+          </a>
+          <div class="topbar-actions">
+            {% if user_role %}
+            <span class="user-pill">{{ user_role }}{% if user_email %} &middot; {{ user_email }}{% endif %}</span>
+            {% endif %}
+            <a class="btn-ghost" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="btn-ghost" href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="heading-wrap">
+          <h1>Delete student record</h1>
+          <p class="subhead">Search by roll number or student ID, or choose a student from the list.</p>
+          <div class="subtle-line" aria-hidden="true"></div>
+        </div>
+
+        <div class="card-shell delete-card">
+
+          <!-- Dropdown list picker -->
+          <div class="section-label">
+            <i class="fa-solid fa-list-ul" aria-hidden="true"></i> Select from list
+          </div>
+          <p class="hint">Type to filter. Click a row to load full details.</p>
+          <div class="combo-wrap">
+            <label class="sr-only" for="comboFilter">Filter students</label>
+            <input
+              type="text"
+              id="comboFilter"
+              class="field-input"
+              placeholder="Type name, roll number, or ID&hellip;"
+              autocomplete="off"
+            />
+            <div id="comboList" class="combo-list" role="listbox" aria-label="Students"></div>
+          </div>
+
+          <div class="divider-or"><span>or search manually</span></div>
+
+          <!-- Manual search -->
+          <div class="manual-search">
+            <label class="field-label" for="queryInput">Roll number or student ID</label>
+            <div class="row-inline">
+              <input
+                type="text"
+                id="queryInput"
+                class="field-input"
+                placeholder="e.g. 21CS001 or 101"
+                autocomplete="off"
+              />
+              <button type="button" id="btnSearch" class="btn-primary">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                Search
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <p id="msgError" class="msg msg-error is-hidden" role="alert"></p>
+          <p id="msgInfo"  class="msg msg-info  is-hidden" role="status"></p>
+
+          <!-- Student detail + confirm block -->
+          <section id="detailSection" class="detail-section is-hidden" aria-live="polite">
+            <h2 class="detail-heading">Student details</h2>
+            <dl id="detailGrid" class="detail-grid"></dl>
+
+            <div id="confirmBlock" class="confirm-block is-hidden">
+              <p class="confirm-text">Are you sure you want to permanently delete this student?</p>
+              <div class="confirm-actions">
+                <button type="button" id="btnCancel" class="btn-secondary">
+                  <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                  Cancel
+                </button>
+                <button type="button" id="btnDelete" class="btn-danger">
+                  <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                  Delete permanently
+                </button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- Pass Flask-generated URLs and student data safely to JS via window globals -->
+    <script>
+      window.APP_URLS = {
+        search:    "{{ url_for('delete_student_search') }}",
+        confirm:   "{{ url_for('delete_student_confirm_delete') }}",
+        dashboard: "{{ url_for('dashboard') }}"
+      };
+      window.STUDENTS_DATA = {{ students_for_dropdown | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/delete_student.js') }}"></script>
+  </body>
+</html>

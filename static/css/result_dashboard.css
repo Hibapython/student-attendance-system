@@ -1,0 +1,66 @@
+/**
+ * Result Dashboard – BGCGW
+ * Theme matches attendance module.
+ */
+:root {
+    --bg-page: #faf8fc;
+    --primary-lilac: #f5d7ff;
+    --accent-lilac: #e39df9;
+    --border-grey: #e8e4ec;
+    --border-grey-dark: #d4ceda;
+    --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+.dash-container {
+    font-family: var(--font-serif);
+}
+
+.dash-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dash-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #4a4458;
+    margin-bottom: 0.25rem;
+}
+
+.card-soft {
+    background: #fff;
+    border: 1px solid var(--border-grey);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(227, 157, 249, 0.08);
+    padding: 1.25rem 1.5rem;
+}
+
+.metric-card .metric-label {
+    font-size: 0.8rem;
+    color: #6b6578;
+    font-weight: 500;
+}
+
+.metric-card .metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4a4458;
+}
+
+.card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4458;
+    margin: 0;
+}
+

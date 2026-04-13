@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Management Dashboard</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+
+    <style>
+      :root {
+        --bg: #faf8fc;
+        --primary: #f5d7ff;
+        --accent: #e39df9;
+        --border: #e6e1ea;
+        --text: #2a2433;
+        --muted: #6a6176;
+        --shadow: 0 10px 26px rgba(40, 18, 70, 0.08);
+        --shadow-hover: 0 16px 36px rgba(40, 18, 70, 0.14);
+        --radius-lg: 20px;
+        --radius-md: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Playfair Display", Georgia, serif;
+        line-height: 1.4;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        min-height: 100vh;
+      }
+
+      /* Top navigation */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(250, 248, 252, 0.85);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(230, 225, 234, 0.75);
+      }
+
+      .topbar-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--primary), rgba(227, 157, 249, 0.25));
+        border: 1px solid rgba(227, 157, 249, 0.35);
+        box-shadow: 0 10px 20px rgba(227, 157, 249, 0.18);
+        display: grid;
+        place-items: center;
+      }
+
+      .brand-mark i {
+        font-size: 18px;
+        color: #6b2cc7;
+      }
+
+      .brand-title {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .logout-btn {
+        appearance: none;
+        border: 1px solid rgba(227, 157, 249, 0.45);
+        background: linear-gradient(135deg, rgba(227, 157, 249, 0.25), rgba(245, 215, 255, 0.4));
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-family: inherit;
+        font-weight: 600;
+        color: #4a2a8a;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        box-shadow: 0 8px 18px rgba(227, 157, 249, 0.12);
+      }
+
+      .logout-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 26px rgba(227, 157, 249, 0.18);
+        background: linear-gradient(135deg, rgba(227, 157, 249, 0.35), rgba(245, 215, 255, 0.55));
+      }
+
+      .logout-btn:disabled {
+        opacity: 0.75;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Main layout */
+      .main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 26px 18px 48px;
+      }
+
+      .heading-wrap {
+        text-align: center;
+        margin: 8px 0 18px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 3.5vw, 44px);
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+
+      .subtle-line {
+        margin: 12px auto 0;
+        width: min(520px, 100%);
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(227, 157, 249, 0), rgba(227, 157, 249, 0.6), rgba(245, 215, 255, 0));
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        align-items: stretch;
+        margin-top: 18px;
+      }
+
+      .card-link {
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 22px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        background: linear-gradient(
+          180deg,
+          rgba(245, 215, 255, 0.22),
+          rgba(255, 255, 255, 0.8)
+        );
+        box-shadow: 0 10px 24px rgba(40, 18, 70, 0.06);
+        transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+        outline: none;
+      }
+
+      .card-link:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(227, 157, 249, 0.65);
+      }
+
+      .card-link:focus-visible {
+        box-shadow: 0 0 0 4px rgba(227, 157, 249, 0.35), var(--shadow-hover);
+      }
+
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .card-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: var(--radius-md);
+        background: linear-gradient(135deg, rgba(245, 215, 255, 0.9), rgba(227, 157, 249, 0.35));
+        border: 1px solid rgba(227, 157, 249, 0.45);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 12px 24px rgba(227, 157, 249, 0.14);
+        flex: 0 0 auto;
+      }
+
+      .card-icon i {
+        font-size: 20px;
+        color: #6b2cc7;
+      }
+
+      .card-arrow {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        border: 1px solid rgba(230, 225, 234, 0.9);
+        background: rgba(250, 248, 252, 0.6);
+        display: grid;
+        place-items: center;
+        color: #7a6a86;
+      }
+
+      .card-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.15px;
+      }
+
+      .card-desc {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+        max-width: 45ch;
+      }
+
+      .card-footer {
+        margin-top: auto;
+        padding-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #5b4c6b;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .pill {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(227, 157, 249, 0.45);
+        background: rgba(245, 215, 255, 0.25);
+      }
+
+      /* Small screens */
+      @media (max-width: 520px) {
+        .topbar-inner {
+          padding: 12px 14px;
+        }
+
+        .brand-title {
+          font-size: 18px;
+        }
+
+        .main {
+          padding: 22px 14px 40px;
+        }
+
+        .card-link {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <div class="brand" aria-label="Student Management Dashboard">
+            <div class="brand-mark" aria-hidden="true">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="brand-title">Student Management Dashboard</div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;">
+            {% if user_role %}
+            <span style="font-size:13px;color:#6a6176;font-weight:600;">{{ user_role }}{% if user_email %} &bull; {{ user_email }}{% endif %}</span>
+            {% endif %}
+            <a id="logoutBtn" class="logout-btn" href="{{ url_for('logout') }}" style="text-decoration:none;">
+              Logout
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="heading-wrap">
+          <h1>Dashboard</h1>
+          <div class="subtle-line" aria-hidden="true"></div>
+        </div>
+
+        <section class="grid" aria-label="Dashboard modules">
+          <a class="card-link" href="{{ url_for('attendance_register') }}" aria-label="Hour-wise Attendance">
+            <div class="card-top">
+              <div class="card-icon" aria-hidden="true">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div class="card-arrow" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right-long"></i>
+              </div>
+            </div>
+            <h2 class="card-title">Hour-wise Attendance</h2>
+            <p class="card-desc">Track attendance by hour and keep records organized.</p>
+            <div class="card-footer">
+              <span class="pill">Open</span>
+              <span>Attendance Register</span>
+            </div>
+          </a>
+
+          <a class="card-link" href="{{ url_for('mark_register') }}" aria-label="Mark Registration">
+            <div class="card-top">
+              <div class="card-icon" aria-hidden="true">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <div class="card-arrow" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right-long"></i>
+              </div>
+            </div>
+            <h2 class="card-title">Mark Registration</h2>
+            <p class="card-desc">Register marks efficiently with a clean, academic workflow.</p>
+            <div class="card-footer">
+              <span class="pill">Open</span>
+              <span>Mark Register</span>
+            </div>
+          </a>
+
+          <a class="card-link" href="{{ url_for('application_form') }}" aria-label="Application Form">
+            <div class="card-top">
+              <div class="card-icon" aria-hidden="true">
+                <i class="fa-solid fa-file-signature"></i>
+              </div>
+              <div class="card-arrow" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right-long"></i>
+              </div>
+            </div>
+            <h2 class="card-title">Application Form</h2>
+            <p class="card-desc">Collect student applications in a consistent and secure format.</p>
+            <div class="card-footer">
+              <span class="pill">Open</span>
+              <span>New Applications</span>
+            </div>
+          </a>
+
+          <a class="card-link" href="{{ url_for('report_page') }}" aria-label="Student Report">
+            <div class="card-top">
+              <div class="card-icon" aria-hidden="true">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+              <div class="card-arrow" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right-long"></i>
+              </div>
+            </div>
+            <h2 class="card-title">Student Report</h2>
+            <p class="card-desc">View academic summaries and generate student performance insights.</p>
+            <div class="card-footer">
+              <span class="pill">Open</span>
+              <span>Reports</span>
+            </div>
+          </a>
+
+          <a
+            class="card-link"
+            href="{{ url_for('delete_student') }}"
+            aria-label="Deletion — Student Removal"
+          >
+            <div class="card-top">
+              <div class="card-icon" aria-hidden="true">
+                <i class="fa-solid fa-user-xmark"></i>
+              </div>
+              <div class="card-arrow" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right-long"></i>
+              </div>
+            </div>
+            <h2 class="card-title">Deletion</h2>
+            <p class="card-desc">Manage student records by removing entries when needed.</p>
+            <div class="card-footer">
+              <span class="pill">Open</span>
+              <span>Student Removal</span>
+            </div>
+          </a>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Logout handled via server-side /logout route
+    </script>
+  </body>
+</html>
+

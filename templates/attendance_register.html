@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hour-Wise Attendance Register | {{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/attendance.css') }}">
+</head>
+<body style="background:#faf8fc;">
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#f5d7ff; border-bottom:1px solid #e8e4ec;">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}">{{ app_name }}</a>
+        <span class="navbar-text small text-muted">{{ college_name }}</span>
+    </div>
+</nav>
+<main class="container-fluid py-4">
+<div class="attendance-register-container" id="attendanceApp" data-api-load="{{ url_for('load_attendance') }}" data-api-save="{{ url_for('save_attendance') }}">
+    <header class="register-header">
+        <h1 class="register-title">Hour-Wise Attendance Register</h1>
+        <p class="register-subtitle">{{ college_name }}</p>
+    </header>
+
+    <div class="controls-card">
+        <div class="controls-row">
+            <div class="control-group">
+                <label for="monthSelect">Month</label>
+                <select id="monthSelect" class="form-select">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="yearSelect">Year</label>
+                <select id="yearSelect" class="form-select"></select>
+            </div>
+            <div class="control-group">
+                <label for="semesterInput">Semester Number</label>
+                <input type="number" id="semesterInput" class="form-control" value="1" min="1" max="10">
+            </div>
+            <button type="button" id="loadBtn" class="btn-load">Load Attendance</button>
+        </div>
+    </div>
+
+    <div id="errorBanner" class="error-banner" style="display: none;" role="alert"></div>
+
+    <div id="attendanceGrid" class="attendance-grid-wrapper">
+        <p class="placeholder-text">Select month, year, and semester, then click <strong>Load Attendance</strong>.</p>
+    </div>
+
+    <div id="monthlySummary" class="monthly-summary-wrapper" style="display: none;">
+        <h2 class="summary-title">Monthly Summary</h2>
+        <div class="summary-scroll">
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Attendance ID</th>
+                        <th>Roll Number</th>
+                        <th>Student Name</th>
+                        <th>Total Present</th>
+                        <th>Total Absent</th>
+                        <th>Total Late</th>
+                        <th>Attendance %</th>
+                        <th>Eligibility</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
+</body>
+</html>

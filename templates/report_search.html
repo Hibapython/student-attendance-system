@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Report Search | {{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <style>
+        .search-hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: var(--bg-page);
+        }
+
+        .search-card {
+            background: #fff;
+            border: 1px solid var(--border-grey);
+            border-radius: 18px;
+            box-shadow: 0 6px 32px rgba(227, 157, 249, 0.14);
+            padding: 2.5rem 2.25rem 2rem;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .search-badge {
+            display: inline-block;
+            background: var(--primary-lilac);
+            color: #6a4c82;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-radius: 20px;
+            padding: 0.3rem 0.9rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .search-title {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #4a4458;
+            margin-bottom: 0.3rem;
+            font-family: var(--font-serif);
+        }
+
+        .search-subtitle {
+            font-size: 0.9rem;
+            color: #7a7485;
+            margin-bottom: 1.75rem;
+        }
+
+        .divider-or {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #b0a8bb;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 1.1rem 0;
+        }
+
+        .divider-or::before,
+        .divider-or::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-grey);
+        }
+
+        .search-input-group {
+            margin-bottom: 0.85rem;
+        }
+
+        .search-input-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #5a5468;
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .search-input-group input {
+            width: 100%;
+            border: 1.5px solid var(--border-grey);
+            border-radius: 10px;
+            padding: 0.65rem 0.9rem;
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: #4a4458;
+            background: #faf8fc;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .search-input-group input:focus {
+            border-color: var(--accent-lilac);
+            box-shadow: 0 0 0 3px rgba(227, 157, 249, 0.18);
+            background: #fff;
+        }
+
+        .btn-search {
+            width: 100%;
+            background: var(--accent-lilac);
+            color: #4a4458;
+            border: 1px solid var(--border-grey-dark);
+            border-radius: 10px;
+            padding: 0.7rem 1.5rem;
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            letter-spacing: 0.02em;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+        }
+
+        .btn-search:hover {
+            background: #dc8ef5;
+            box-shadow: 0 4px 14px rgba(227, 157, 249, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
+        }
+
+        .error-box {
+            background: #fff0f3;
+            border: 1px solid #f5c0cc;
+            border-radius: 10px;
+            color: #c62828;
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .error-box::before {
+            content: '⚠';
+            font-size: 1rem;
+        }
+
+        .college-tag {
+            font-size: 0.8rem;
+            color: #9b90a8;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#f5d7ff; border-bottom:1px solid #e8e4ec;">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-semibold"
+           style="font-family:'Playfair Display',Georgia,serif; color:#4a4458;"
+           href="{{ url_for('index') }}">{{ app_name }}</a>
+        <span class="navbar-text small" style="color:#7a7485;">{{ college_name }}</span>
+    </div>
+</nav>
+
+<div class="search-hero">
+    <div class="search-card">
+        <span class="search-badge">📋 Report Module</span>
+        <h1 class="search-title">Student Consolidated Report</h1>
+        <p class="search-subtitle">Enter the student's Roll Number or Student ID to generate their full academic report.</p>
+
+        {% if error %}
+        <div class="error-box">{{ error }}</div>
+        {% endif %}
+
+        <form method="GET" action="{{ url_for('report_search_post') }}" autocomplete="off">
+            <div class="search-input-group">
+                <label for="roll_no">Roll Number</label>
+                <input type="text"
+                       id="roll_no"
+                       name="roll_no"
+                       placeholder="e.g. 1001"
+                       value="{{ request.form.get('roll_no', '') }}">
+            </div>
+
+            <div class="divider-or">or</div>
+
+            <div class="search-input-group">
+                <label for="student_id">Student ID (Database ID)</label>
+                <input type="text"
+                       id="student_id"
+                       name="student_id"
+                       placeholder="e.g. 5"
+                       value="{{ request.form.get('student_id', '') }}">
+            </div>
+
+            <button type="submit" class="btn-search">
+                Search &amp; Generate Report →
+            </button>
+        </form>
+
+        <p class="college-tag">{{ college_name }}</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+/**
+ * Hour-Wise Attendance Register – BGCGW
+ * Theme: Soft lilac, feminine, modern academic
+ */
+:root {
+    --bg-page: #faf8fc;
+    --primary-lilac: #f5d7ff;
+    --accent-lilac: #e39df9;
+    --border-grey: #e8e4ec;
+    --border-grey-dark: #d4ceda;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --present: #c8e6c9;
+    --absent: #ffcdd2;
+    --late: #ffe0b2;
+    --eligible: #a5d6a7;
+    --not-eligible: #ef9a9a;
+}
+
+.attendance-register-container {
+    font-family: var(--font-serif);
+    background: var(--bg-page);
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+/* Header */
+.register-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.register-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #4a4458;
+    margin-bottom: 0.25rem;
+}
+
+.register-subtitle {
+    font-size: 0.95rem;
+    color: #6b6578;
+}
+
+/* Controls */
+.controls-card {
+    background: #fff;
+    border: 1px solid var(--border-grey);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(227, 157, 249, 0.08);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.control-group label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5a5468;
+}
+
+.control-group .form-select,
+.control-group .form-control {
+    min-width: 140px;
+    border: 1px solid var(--border-grey);
+    border-radius: 8px;
+    font-family: var(--font-serif);
+}
+
+.btn-load {
+    background: var(--accent-lilac);
+    color: #4a4458;
+    border: 1px solid var(--border-grey-dark);
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-load:hover {
+    background: #dc8ef5;
+    box-shadow: 0 2px 6px rgba(227, 157, 249, 0.25);
+}
+
+.error-banner {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Grid wrapper */
+.attendance-grid-wrapper {
+    background: #fff;
+    border: 1px solid var(--border-grey);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(227, 157, 249, 0.08);
+    overflow: hidden;
+}
+
+.placeholder-text {
+    padding: 2rem;
+    text-align: center;
+    color: #7a7485;
+}
+
+/* Date block */
+.date-block {
+    margin-bottom: 2rem;
+}
+
+.date-header-row {
+    background: var(--primary-lilac);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #4a4458;
+    border-bottom: 1px solid var(--border-grey);
+}
+
+/* Scroll container */
+.attendance-scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+/* Excel-style grid */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.attendance-table th,
+.attendance-table td {
+    border: 1px solid var(--border-grey);
+    padding: 0.5rem 0.6rem;
+    text-align: center;
+}
+
+.attendance-table thead th {
+    background: var(--primary-lilac);
+    font-weight: 600;
+    color: #4a4458;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.attendance-table .col-attendance-serial,
+.attendance-table .col-roll-no,
+.attendance-table .col-student-name {
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 5;
+    min-width: 100px;
+}
+
+.attendance-table thead .col-attendance-serial,
+.attendance-table thead .col-roll-no,
+.attendance-table thead .col-student-name {
+    background: var(--primary-lilac);
+}
+
+.attendance-table .col-attendance-serial {
+    min-width: 110px;
+    left: 0;
+}
+
+.attendance-table .col-roll-no {
+    left: 110px;
+}
+
+.attendance-table .col-student-name {
+    left: 210px;
+    min-width: 160px;
+}
+
+.attendance-table tbody tr:hover .col-attendance-serial,
+.attendance-table tbody tr:hover .col-roll-no,
+.attendance-table tbody tr:hover .col-student-name {
+    background: #fdf9ff;
+}
+
+.attendance-table tbody tr:hover td {
+    background: #fdf9ff;
+}
+
+.attendance-table .hour-cell {
+    min-width: 48px;
+    max-width: 52px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.attendance-table .hour-cell:hover {
+    box-shadow: inset 0 0 0 2px var(--accent-lilac);
+}
+
+.attendance-table .hour-cell.status-P {
+    background: var(--present);
+}
+
+.attendance-table .hour-cell.status-A {
+    background: var(--absent);
+}
+
+.attendance-table .hour-cell.status-L {
+    background: var(--late);
+}
+
+.attendance-table .day-total-cell {
+    min-width: 90px;
+    font-weight: 500;
+    background: #faf8fc;
+}
+
+/* Monthly summary */
+.monthly-summary-wrapper {
+    margin-top: 2rem;
+    background: #fff;
+    border: 1px solid var(--border-grey);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(227, 157, 249, 0.08);
+    overflow: hidden;
+}
+
+.summary-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #4a4458;
+    padding: 1rem 1.25rem;
+    background: var(--primary-lilac);
+    border-bottom: 1px solid var(--border-grey);
+}
+
+.summary-scroll {
+    overflow-x: auto;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.summary-table th,
+.summary-table td {
+    border: 1px solid var(--border-grey);
+    padding: 0.6rem 0.75rem;
+}
+
+.summary-table thead th {
+    background: var(--primary-lilac);
+    font-weight: 600;
+}
+
+.summary-table .badge-eligible {
+    background: var(--eligible);
+    color: #2e7d32;
+}
+
+.summary-table .badge-not-eligible {
+    background: var(--not-eligible);
+    color: #c62828;
+}
+
+/* Action bar */
+.action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid var(--border-grey);
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.btn-save {
+    background: var(--accent-lilac);
+    color: #4a4458;
+    border: 1px solid var(--border-grey-dark);
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #dc8ef5;
+}
+
+.date-save-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-top: 1px solid var(--border-grey);
+    background: #fff;
+}
+
+.date-save-msg {
+    align-self: center;
+    font-size: 0.9rem;
+    color: #5a5468;
+}

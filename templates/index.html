@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGCGW Student Attendance & Mark Register | Bharathidasan Government College for Women</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="nav-logo">BGCGW</a>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="#roles">Login</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Bharathidasan Government College for Women</h1>
+                <h2 class="hero-subtitle">Student Attendance & Mark Register</h2>
+                <p class="hero-description">A centralized academic management system for attendance and student performance.</p>
+                <a href="#roles" class="btn-primary">Continue</a>
+            </div>
+            <div class="hero-visual">
+                <div id="canvas-3d"></div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Role Selection Section -->
+    <section class="roles" id="roles">
+        <div class="section-container">
+            <h2 class="section-title">Select Your Role</h2>
+            <div class="role-cards">
+                <a href="{{ url_for('hod_login') }}" class="role-card">
+                    <div class="role-icon-box">
+                        <i class="fas fa-user-tie role-icon"></i>
+                    </div>
+                    <h3>HOD</h3>
+                    <p>Head of Department</p>
+                </a>
+                <a href="{{ url_for('teacher_login') }}" class="role-card">
+                    <div class="role-icon-box">
+                        <i class="fas fa-chalkboard-teacher role-icon"></i>
+                    </div>
+                    <h3>Class Teacher</h3>
+                    <p>Faculty Member</p>
+                </a>
+                <a href="{{ url_for('cr_login') }}" class="role-card">
+                    <div class="role-icon-box">
+                        <i class="fas fa-user-graduate role-icon"></i>
+                    </div>
+                    <h3>Class Representative</h3>
+                    <p>Student Representative</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Our System Section -->
+    <section class="about-system" id="about">
+        <div class="section-container">
+            <h2 class="section-title">About Our System</h2>
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="fas fa-calendar-check feature-icon"></i>
+                    </div>
+                    <h3>Attendance Tracking</h3>
+                    <p>Efficiently track and manage student attendance with real-time updates and comprehensive reporting.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                    </div>
+                    <h3>Performance Monitoring</h3>
+                    <p>Monitor student academic performance with detailed mark registers and progress analytics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="fas fa-users feature-icon"></i>
+                    </div>
+                    <h3>Multi-Role Access</h3>
+                    <p>Secure role-based access for HOD, teachers, and student representatives with appropriate permissions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; Bharathidasan Government College for Women. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+/**
+ * Mark Module – BGCGW
+ * Theme matches attendance module.
+ */
+:root {
+    --bg-page: #faf8fc;
+    --primary-lilac: #f5d7ff;
+    --accent-lilac: #e39df9;
+    --border-grey: #e8e4ec;
+    --border-grey-dark: #d4ceda;
+    --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+.mark-container {
+    font-family: var(--font-serif);
+    background: var(--bg-page);
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #4a4458;
+    margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: #6b6578;
+}
+
+.card-soft {
+    background: #fff;
+    border: 1px solid var(--border-grey);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(227, 157, 249, 0.08);
+    padding: 1.25rem 1.5rem;
+}
+
+.small-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5a5468;
+}
+
+.btn-lilac {
+    background: var(--accent-lilac);
+    color: #4a4458;
+    border: 1px solid var(--border-grey-dark);
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-lilac:hover {
+    background: #dc8ef5;
+    box-shadow: 0 2px 6px rgba(227, 157, 249, 0.25);
+}
+
+.table-head {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-grey);
+}
+
+.table-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4a4458;
+}
+
+.soft-table thead th {
+    background: var(--primary-lilac);
+    border-color: var(--border-grey);
+    color: #4a4458;
+    font-weight: 600;
+}
+
+.soft-table td,
+.soft-table th {
+    border-color: var(--border-grey);
+}
+
+.metric {
+    border: 1px solid var(--border-grey);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    background: #fff;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #6b6578;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #4a4458;
+}
+

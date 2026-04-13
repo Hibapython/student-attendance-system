@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Registration | {{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Mark.css') }}">
+</head>
+<body style="background:#faf8fc;">
+<nav class="navbar navbar-expand-lg navbar-light" style="background:#f5d7ff; border-bottom:1px solid #e8e4ec;">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}">{{ app_name }}</a>
+        <span class="navbar-text small text-muted">{{ college_name }}</span>
+    </div>
+</nav>
+
+<main class="container-fluid py-4">
+    <div class="mark-container"
+         id="markApp"
+         data-api-student="{{ url_for('api_student_lookup', student_id='__SID__') }}"
+         data-api-results="{{ url_for('api_student_results', student_id='__SID__') }}"
+         data-api-save="{{ url_for('save_marks') }}">
+
+        <header class="page-header">
+            <h1 class="page-title">Mark Registration</h1>
+            <p class="page-subtitle">{{ college_name }}</p>
+        </header>
+
+        <div class="card-soft mb-3">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="form-label small-label">Mark ID</label>
+                    <input type="text" class="form-control" value="Auto (after save)" disabled>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label small-label">Student ID</label>
+                    <input type="text" id="studentId" class="form-control" placeholder="Enter Student ID (Roll No)">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label small-label">Student Name</label>
+                    <input type="text" id="studentName" class="form-control" placeholder="Auto generated" disabled>
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="form-label small-label">Semester Number</label>
+                    <select id="semesterId" class="form-select">
+                        {% for s in range(1, 9) %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-soft mb-3">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="form-label small-label">Number of Subjects</label>
+                    <input type="number" id="subjectCount" class="form-control" min="1" max="20" value="6">
+                </div>
+                <div class="col-12 col-md-4">
+                    <button class="btn btn-lilac" id="buildTableBtn" type="button">Create Semester Table</button>
+                </div>
+                <div class="col-12 col-md-4 text-md-end">
+                    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('mark_result_dashboard') }}">Result Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="banner" class="alert alert-danger d-none" role="alert"></div>
+        <div id="successBanner" class="alert alert-success d-none" role="alert"></div>
+
+        <div id="semesterTableWrap"></div>
+
+        <div class="card-soft mt-3">
+            <div class="row g-3">
+                <div class="col-12 col-md-3">
+                    <div class="metric">
+                        <div class="metric-label">Total Marks (Sum)</div>
+                        <div class="metric-value" id="mTotalSum">0</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="metric">
+                        <div class="metric-label">Percentage</div>
+                        <div class="metric-value" id="mPercentage">0.00%</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-2">
+                    <div class="metric">
+                        <div class="metric-label">SGPA</div>
+                        <div class="metric-value" id="mSgpa">0.00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-2">
+                    <div class="metric">
+                        <div class="metric-label">CGPA</div>
+                        <div class="metric-value" id="mCgpa">0.00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-2">
+                    <div class="metric">
+                        <div class="metric-label">Grade</div>
+                        <div class="metric-value" id="mGrade">-</div>
+                    </div>
+                </div>
+            </div>
+            <div class="small text-muted mt-2">
+                Percentage &amp; SGPA computed with 486 total marks (as specified). CGPA is computed as the average SGPA from Semester 1 up to the current semester (max 6), using saved results plus current semester live.
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    const elApp = document.getElementById('markApp');
+    const apiStudentTmpl = (elApp && elApp.dataset.apiStudent) || '/api/mark/student/__SID__';
+    const apiResultsTmpl = (elApp && elApp.dataset.apiResults) || '/api/mark/results/__SID__';
+    const apiSave = (elApp && elApp.dataset.apiSave) || '/save_marks';
+
+    const $ = (id) => document.getElementById(id);
+    const banner = $('banner');
+    const successBanner = $('successBanner');
+
+    let existingSgpas = {};
+
+    function showError(msg) {
+        if (!banner) return;
+        banner.textContent = msg;
+        banner.classList.remove('d-none');
+    }
+    function clearError() {
+        if (!banner) return;
+        banner.classList.add('d-none');
+        banner.textContent = '';
+    }
+    function showSuccess(msg) {
+        if (!successBanner) return;
+        successBanner.textContent = msg;
+        successBanner.classList.remove('d-none');
+    }
+    function clearSuccess() {
+        if (!successBanner) return;
+        successBanner.classList.add('d-none');
+        successBanner.textContent = '';
+    }
+
+    function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+    function gradeForPct(pct) {
+        if (pct >= 96) return 'O';
+        if (pct >= 86) return 'A+';
+        if (pct >= 76) return 'A';
+        if (pct >= 66) return 'B+';
+        if (pct >= 56) return 'B';
+        if (pct >= 46) return 'C';
+        if (pct >= 40) return 'P';
+        return 'F';
+    }
+
+    async function loadStudentNameAndResults() {
+        const sid = ($('studentId').value || '').trim();
+        $('studentName').value = '';
+        existingSgpas = {};
+        if (!sid) return;
+
+        clearError();
+        clearSuccess();
+
+        try {
+            const resp = await fetch(apiStudentTmpl.replace('__SID__', encodeURIComponent(sid)));
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Student lookup failed');
+            $('studentName').value = data.student_name || '';
+        } catch (e) {
+            showError(e.message || 'Student not found');
+        }
+
+        try {
+            const resp2 = await fetch(apiResultsTmpl.replace('__SID__', encodeURIComponent(sid)));
+            const data2 = await resp2.json();
+            if (data2 && data2.success && Array.isArray(data2.results)) {
+                data2.results.forEach(r => {
+                    const sem = parseInt(r.semester_id, 10);
+                    const sg = parseFloat(r.sgpa);
+                    if (Number.isFinite(sem) && Number.isFinite(sg)) existingSgpas[sem] = sg;
+                });
+            }
+        } catch (_) {}
+
+        recalcSummary();
+    }
+
+    function buildSemesterTable() {
+        clearError();
+        clearSuccess();
+
+        const wrap = $('semesterTableWrap');
+        const count = parseInt($('subjectCount').value, 10) || 0;
+        const sem = parseInt($('semesterId').value, 10) || 1;
+        if (!wrap) return;
+        if (count <= 0) return showError('Please enter a valid number of subjects.');
+
+        wrap.innerHTML = `
+            <div class="card-soft">
+                <div class="table-head">
+                    <div>
+                        <h2 class="table-title mb-0">Semester ${sem} Table</h2>
+                        <div class="small text-muted">Enter Subject ID, Subject Name, Internal & External marks. Total updates automatically.</div>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-lilac" id="saveSemBtn">Save Semester ${sem} Marks</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle soft-table mb-0" id="marksTable">
+                        <thead>
+                            <tr>
+                                <th style="min-width:140px;">Subject ID</th>
+                                <th style="min-width:220px;">Subject Name</th>
+                                <th style="min-width:140px;">Internal Marks</th>
+                                <th style="min-width:140px;">External Marks</th>
+                                <th style="min-width:140px;">Total Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Array.from({length: count}).map(() => `
+                                <tr>
+                                    <td><input class="form-control form-control-sm subj-id" placeholder="e.g. CS601"></td>
+                                    <td><input class="form-control form-control-sm subj-name" placeholder="e.g. Distributed Systems"></td>
+                                    <td><input type="number" min="0" class="form-control form-control-sm im" value="0"></td>
+                                    <td><input type="number" min="0" class="form-control form-control-sm em" value="0"></td>
+                                    <td><input type="number" class="form-control form-control-sm tm" value="0" disabled></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4" class="text-end">Total (Sum)</th>
+                                <th id="sumCell">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        const table = $('marksTable');
+        if (table) {
+            table.addEventListener('input', (ev) => {
+                const t = ev.target;
+                if (!t) return;
+                if (t.classList.contains('im') || t.classList.contains('em')) {
+                    const tr = t.closest('tr');
+                    const im = parseInt(tr.querySelector('.im').value || '0', 10) || 0;
+                    const em = parseInt(tr.querySelector('.em').value || '0', 10) || 0;
+                    tr.querySelector('.tm').value = im + em;
+                    recalcSummary();
+                }
+            });
+        }
+
+        const btnSave = $('saveSemBtn');
+        if (btnSave) btnSave.addEventListener('click', saveSemesterMarks);
+
+        recalcSummary();
+    }
+
+    function currentSubjectsPayload() {
+        const table = $('marksTable');
+        if (!table) return [];
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        return rows.map(tr => {
+            const subject_id = (tr.querySelector('.subj-id').value || '').trim();
+            const subject_name = (tr.querySelector('.subj-name').value || '').trim();
+            const internal_marks = parseInt(tr.querySelector('.im').value || '0', 10) || 0;
+            const external_marks = parseInt(tr.querySelector('.em').value || '0', 10) || 0;
+            return { subject_id, subject_name, internal_marks, external_marks };
+        }).filter(x => x.subject_id && x.subject_name);
+    }
+
+    function currentTotalSumAllRows() {
+        const table = $('marksTable');
+        if (!table) return 0;
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        return rows.reduce((acc, tr) => {
+            const im = parseInt(tr.querySelector('.im').value || '0', 10) || 0;
+            const em = parseInt(tr.querySelector('.em').value || '0', 10) || 0;
+            return acc + im + em;
+        }, 0);
+    }
+
+    function recalcSummary() {
+        const totalSum = currentTotalSumAllRows();
+        const nSubjects = parseInt($('subjectCount').value, 10) || 0;
+        // Each subject is out of 100, so overall % is average marks per subject.
+        // Example: totalSum=252, nSubjects=3 => 84.00%
+        const pct = nSubjects > 0 ? round2(totalSum / nSubjects) : 0;
+        const sgpa = round2((totalSum / 486) * 10);
+
+        const sem = parseInt($('semesterId').value, 10) || 1;
+        const sgpaMap = Object.assign({}, existingSgpas);
+        sgpaMap[sem] = sgpa;
+        const upto = Math.min(sem, 6);
+        const used = [];
+        for (let k = 1; k <= upto; k++) {
+            const v = parseFloat(sgpaMap[k]);
+            if (Number.isFinite(v)) used.push(v);
+        }
+        const cgpa = used.length ? round2(used.reduce((a, b) => a + b, 0) / used.length) : 0;
+        const grade = gradeForPct(pct);
+
+        $('mTotalSum').textContent = String(totalSum);
+        $('mPercentage').textContent = pct.toFixed(2) + '%';
+        $('mSgpa').textContent = sgpa.toFixed(2);
+        $('mCgpa').textContent = cgpa.toFixed(2);
+        $('mGrade').textContent = grade;
+
+        const sumCell = $('sumCell');
+        if (sumCell) sumCell.textContent = String(totalSum);
+    }
+
+    async function saveSemesterMarks() {
+        clearError();
+        clearSuccess();
+
+        const sid = ($('studentId').value || '').trim();
+        const sem = parseInt($('semesterId').value, 10) || 0;
+        const subjects = currentSubjectsPayload();
+
+        if (!sid) return showError('Please enter Student ID.');
+        if (!sem) return showError('Please choose Semester Number.');
+        if (!subjects.length) return showError('Please fill at least 1 valid subject row (Subject ID and Subject Name).');
+
+        const btn = $('saveSemBtn');
+        if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+        try {
+            const resp = await fetch(apiSave, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: sid, semester_id: sem, subjects })
+            });
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Save failed');
+
+            const pctText = String(data.percentage || '').endsWith('%') ? String(data.percentage) : `${data.percentage}%`;
+            showSuccess(`Saved ${data.saved_rows} subject rows. Percentage: ${pctText} | SGPA: ${data.sgpa} | CGPA: ${data.cgpa} | Grade: ${data.grade} | Attendance Mark: ${data.attendance_mark}`);
+            await loadStudentNameAndResults();
+        } catch (e) {
+            showError(e.message || 'Could not save marks');
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = `Save Semester ${$('semesterId').value} Marks`; }
+        }
+    }
+
+    function init() {
+        const sid = $('studentId');
+        const btn = $('buildTableBtn');
+        const semSel = $('semesterId');
+        if (sid) sid.addEventListener('blur', loadStudentNameAndResults);
+        if (sid) sid.addEventListener('change', loadStudentNameAndResults);
+        if (btn) btn.addEventListener('click', buildSemesterTable);
+        if (semSel) semSel.addEventListener('change', recalcSummary);
+        buildSemesterTable();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>
+</body>
+</html>
+

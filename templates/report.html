@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Report | {{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light no-print"
+     style="background:#f5d7ff; border-bottom:1px solid #e8e4ec;">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-semibold"
+           style="font-family:'Playfair Display',Georgia,serif; color:#4a4458;"
+           href="{{ url_for('index') }}">{{ app_name }}</a>
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('report_search') }}"
+               class="btn-lilac no-print"
+               style="font-size:0.85rem; padding:0.35rem 1rem; text-decoration:none;">
+                ← New Search
+            </a>
+            <span class="navbar-text small" style="color:#7a7485;">{{ college_name }}</span>
+        </div>
+    </div>
+</nav>
+
+<main class="container-fluid py-4 px-3 px-md-4 report-container" id="reportApp">
+
+    <div class="print-only print-header">
+        <div class="print-college">{{ college_name }}</div>
+        <div class="print-title">Student Consolidated Report</div>
+    </div>
+
+    <header class="page-header no-print">
+        <h1 class="page-title">Student Consolidated Report</h1>
+        <p class="page-subtitle">{{ college_name }}</p>
+    </header>
+
+    {% if error %}
+    <div class="error-banner mb-3">{{ error }}</div>
+    {% else %}
+
+    {# Prefer URL params so Update never loses context #}
+    <input type="hidden" id="studentBiodataId"
+           value="{{ (request.args.get('student_biodata_id') or (biodata_pk_value if student else '')) }}">
+    <input type="hidden" id="originalRollNo"
+           value="{{ (request.args.get('roll_no') or (student['roll_no'] if student else '')) }}">
+    <input type="hidden" id="targetSemesterId" value="{{ target_semester_id if target_semester_id else '' }}">
+    {% if student %}
+    <input type="hidden" id="pdfFilename"
+           value="Report_{{ student.full_name | replace(' ','_') }}_{{ student.roll_no }}.pdf">
+    {% endif %}
+
+    <div class="button-bar no-print">
+        <button id="editReportBtn"   class="btn-lilac">✏️ Edit Report</button>
+        <button id="updateReportBtn" class="btn-lilac btn-update" style="display:none;">💾 Update Report</button>
+        <button onclick="window.print()" class="btn-lilac btn-outline-lilac">🖨️ Print Report</button>
+        <!--<button id="downloadPdfBtn"  class="btn-lilac btn-download">⬇️ Download PDF</button> -->
+    </div>
+
+    <div id="updateMsg" class="success-banner mb-3" style="display:none;"></div>
+    <div id="updateErr" class="error-banner  mb-3" style="display:none;"></div>
+
+    <!-- SECTION 1 – STUDENT DETAILS -->
+    <section class="card-soft mb-4" id="studentFields">
+        <div class="section-heading">
+            <span class="section-icon">👤</span> Student Details
+        </div>
+
+        <div class="photo-row mb-4">
+            <div>
+                <div class="photo-preview" id="photoPreviewBox">
+                    {% if student.photo %}
+                    <img id="photoImg"
+                         src="{{ url_for('student_photo', filename=student.photo) }}"
+                         alt="Student Photo"
+                         data-fallback="{{ url_for('static', filename='uploads/' ~ student.photo) }}"
+                         onerror="this.onerror=null; this.src=this.getAttribute('data-fallback');">
+                    {% else %}
+                    <span class="photo-placeholder">No Photo</span>
+                    {% endif %}
+                </div>
+                <div class="photo-edit mt-2">
+                    <label class="field-label">Update Photo</label>
+                    <input type="file" id="photoInput" accept="image/*"
+                           class="form-control form-control-sm"
+                           style="font-size:0.82rem;">
+                </div>
+            </div>
+
+            <div class="flex-fill">
+                <div class="field-block mb-2">
+                    <div class="field-label">Full Name</div>
+                    <div class="field-view">{{ student.full_name or '—' }}</div>
+                    <div class="field-edit">
+                        <input type="text" name="full_name" value="{{ student.full_name or '' }}">
+                    </div>
+                </div>
+                <div class="report-grid-2">
+                    <div class="field-block">
+                        <div class="field-label">Roll Number</div>
+                        <div class="field-view">{{ student.roll_no or '—' }}</div>
+                        <div class="field-edit">
+                            <input type="text" name="roll_no" value="{{ student.roll_no or '' }}">
+                        </div>
+                    </div>
+                    <div class="field-block">
+                        <div class="field-label">Exam Reg. No.</div>
+                        <div class="field-view">{{ student.exam_reg or '—' }}</div>
+                        <div class="field-edit">
+                            <input type="text" name="exam_reg" value="{{ student.exam_reg or '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-grid">
+
+            <div class="field-block">
+                <div class="field-label">Date of Birth</div>
+                <div class="field-view">{{ student.dob or '—' }}</div>
+                <div class="field-edit">
+                    <input type="date" name="dob"
+                           value="{{ student.dob.strftime('%Y-%m-%d') if student.dob and student.dob != '' else '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Class &amp; Section</div>
+                <div class="field-view">{{ student.class_sec or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="class_sec" value="{{ student.class_sec or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Blood Group</div>
+                <div class="field-view">{{ student.blood_group or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="blood_group"
+                           value="{{ student.blood_group or '' }}"
+                           placeholder="e.g. O+ve">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Hostel</div>
+                <div class="field-view">{% if student.hostel %}Yes{% else %}No{% endif %}</div>
+                <div class="field-edit">
+                    <select name="hostel">
+                        <option value="0" {% if not student.hostel %}selected{% endif %}>No</option>
+                        <option value="1" {% if student.hostel %}selected{% endif %}>Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Mother's Name</div>
+                <div class="field-view">{{ student.mother_name or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="mother_name" value="{{ student.mother_name or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Mother's Occupation</div>
+                <div class="field-view">{{ student.mother_occ or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="mother_occ" value="{{ student.mother_occ or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Father's Name</div>
+                <div class="field-view">{{ student.father_name or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="father_name" value="{{ student.father_name or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Father's Occupation</div>
+                <div class="field-view">{{ student.father_occ or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="father_occ" value="{{ student.father_occ or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Primary Phone</div>
+                <div class="field-view">{{ student.primary_phone or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="primary_phone" value="{{ student.primary_phone or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Alternate Phone</div>
+                <div class="field-view">{{ student.alt_phone or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="alt_phone" value="{{ student.alt_phone or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block col-span-2">
+                <div class="field-label">Residential Address</div>
+                <div class="field-view multiline">{{ student.res_address or '—' }}</div>
+                <div class="field-edit">
+                    <textarea name="res_address">{{ student.res_address or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="field-block col-span-2">
+                <div class="field-label">Bus / Transport Address</div>
+                <div class="field-view multiline">{{ student.bus_address or '—' }}</div>
+                <div class="field-edit">
+                    <textarea name="bus_address">{{ student.bus_address or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">School Name</div>
+                <div class="field-view">{{ student.school_name or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="school_name" value="{{ student.school_name or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Category</div>
+                <div class="field-view">{{ student.category or '—' }}</div>
+                <div class="field-edit">
+                    <select name="category">
+                        <option value="">— Select —</option>
+                        {% for cat in ['FC','BC','SC','ST'] %}
+                        <option value="{{ cat }}"
+                            {% if student.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Group Studied</div>
+                <div class="field-view">{{ student.group_studied or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="group_studied" value="{{ student.group_studied or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">HSC Marks</div>
+                <div class="field-view">{{ student.hsc_marks or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="hsc_marks" value="{{ student.hsc_marks or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Scholarship</div>
+                <div class="field-view">{{ student.scholarship or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="scholarship" value="{{ student.scholarship or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Additional Qualification</div>
+                <div class="field-view">{{ student.add_qual or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="add_qual" value="{{ student.add_qual or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">Extra-curricular Activities</div>
+                <div class="field-view">{{ student.extra_curric or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="extra_curric" value="{{ student.extra_curric or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block">
+                <div class="field-label">NCC / Sports</div>
+                <div class="field-view">{{ student.ncc_sports or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="ncc_sports" value="{{ student.ncc_sports or '' }}">
+                </div>
+            </div>
+
+            <div class="field-block col-span-2">
+                <div class="field-label">Achievements</div>
+                <div class="field-view multiline">{{ student.achievements or '—' }}</div>
+                <div class="field-edit">
+                    <textarea name="achievements">{{ student.achievements or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="field-block col-span-2">
+                <div class="field-label">Hobbies</div>
+                <div class="field-view">{{ student.hobbies or '—' }}</div>
+                <div class="field-edit">
+                    <input type="text" name="hobbies" value="{{ student.hobbies or '' }}">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION 2 – ATTENDANCE -->
+    <section class="card-soft mb-4">
+        <div class="section-heading">
+            <span class="section-icon">📅</span> Attendance — Semester {{ target_semester_id }}
+        </div>
+
+        <div class="attendance-summary-box">
+            <div class="att-stat-card">
+                <div class="att-stat-label">Attendance Percentage</div>
+                {% set pct = attendance_percentage | float %}
+                <div class="att-stat-value {% if pct >= 75 %}att-eligible{% elif pct >= 60 %}att-marginal{% else %}att-short{% endif %}">
+                    {{ attendance_percentage }}%
+                </div>
+                <div class="att-stat-sub">
+                    {% if pct >= 75 %}
+                        <span class="badge-att eligible">✔ Eligible</span>
+                    {% elif pct >= 60 %}
+                        <span class="badge-att marginal">⚠ Marginal</span>
+                    {% else %}
+                        <span class="badge-att short">✘ Shortage</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="attendance-edit-inline edit-only mt-3">
+            <div style="flex:1; max-width:280px;">
+                <label class="field-label">Edit Attendance Percentage (0–100)</label>
+                <input type="number"
+                       id="attendance_percentage"
+                       name="attendance_percentage"
+                       class="form-control attendance-perc-edit"
+                       min="0" max="100" step="0.01"
+                       value="{{ attendance_percentage }}">
+                <div class="form-text" style="font-size:0.78rem; color:#9b90a8;">
+                    The backend will redistribute Present/Absent slots to match this percentage.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3 – MARKS -->
+    <section class="card-soft mb-4">
+        <div class="section-heading">
+            <span class="section-icon">📝</span> Marks — Semester {{ target_semester_id }}
+        </div>
+
+        {% if marks_rows %}
+        <div class="table-responsive">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Subject ID</th>
+                        <th>Internal Marks</th>
+                        <th>External Marks</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="marksBody">
+                    {% for row in marks_rows %}
+                    <tr data-subject-id="{{ row.subject_id }}">
+                        <td>{{ loop.index }}</td>
+                        <td style="text-align:left; font-weight:600;">{{ row.subject_id }}</td>
+
+                        <td>
+                            <span class="field-view-inline">{{ row.internal }}</span>
+                            <input class="mark-internal view-hidden"
+                                   type="number" min="0" max="999"
+                                   value="{{ row.internal }}"
+                                   style="width:80px;">
+                        </td>
+
+                        <td>
+                            <span class="field-view-inline">{{ row.external }}</span>
+                            <input class="mark-external view-hidden"
+                                   type="number" min="0" max="999"
+                                   value="{{ row.external }}"
+                                   style="width:80px;">
+                        </td>
+
+                        <td class="total-cell fw-semibold">{{ row.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="padding:1rem 0; color:#7a7485;">No marks records found for this semester.</p>
+        {% endif %}
+
+        {% if metrics %}
+        <div class="metrics-row mt-3">
+            <div class="metric-chip">
+                <div class="metric-label">Percentage</div>
+                <div class="metric-value">{{ metrics.semester_percentage }}%</div>
+            </div>
+            <div class="metric-chip">
+                <div class="metric-label">SGPA</div>
+                <div class="metric-value">{{ metrics.sgpa }}</div>
+            </div>
+            <div class="metric-chip">
+                <div class="metric-label">CGPA</div>
+                <div class="metric-value">{{ metrics.cgpa }}</div>
+            </div>
+            <div class="metric-chip metric-grade">
+                <div class="metric-label">Grade</div>
+                <div class="metric-value grade-badge">{{ metrics.grade }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <div class="button-bar no-print mt-2 mb-4">
+        <button id="editReportBtn2"   class="btn-lilac">✏️ Edit Report</button>
+        <button id="updateReportBtn2" class="btn-lilac btn-update" style="display:none;">💾 Update Report</button>
+        <button onclick="window.print()" class="btn-lilac btn-outline-lilac">🖨️ Print Report</button>
+        <!--<button id="downloadPdfBtn2"  class="btn-lilac btn-download">⬇️ Download PDF</button>-->
+    </div>
+
+    {% endif %}
+</main>
+
+<div class="print-only print-footer">
+    Generated by {{ app_name }} &bull; {{ college_name }}
+</div>
+
+<div id="pdfOverlay" style="
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(245,215,255,0.85); backdrop-filter:blur(4px);
+    flex-direction:column; align-items:center; justify-content:center;
+    font-family:'Playfair Display',Georgia,serif;">
+    <div style="background:#fff; border:1px solid #e8e4ec; border-radius:16px;
+                padding:2.5rem 3rem; text-align:center;
+                box-shadow:0 8px 32px rgba(227,157,249,0.25);">
+        <div style="font-size:2.5rem; margin-bottom:1rem;">📄</div>
+        <div style="font-size:1.15rem; font-weight:700; color:#4a4458;
+                    margin-bottom:0.5rem;">Generating PDF…</div>
+        <div style="font-size:0.88rem; color:#7a7485;">Please wait, this may take a few seconds.</div>
+        <div style="margin-top:1.25rem; width:36px; height:36px; border:4px solid #f5d7ff;
+                    border-top-color:#e39df9; border-radius:50%; animation:spin 0.8s linear infinite;
+                    display:inline-block;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-download {
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+    color: #2e7d32;
+}
+.btn-download:hover {
+    background: #c8e6c9;
+    color: #1b5e20;
+    box-shadow: 0 4px 14px rgba(165,214,167,0.35);
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+
+<script>
+(function () {
+    'use strict';
+
+    function downloadPDF() {
+        var overlay  = document.getElementById('pdfOverlay');
+        var filename = (document.getElementById('pdfFilename') || {}).value || 'Student_Report.pdf';
+        var element  = document.getElementById('reportApp');
+
+        if (!element) { alert('Report content not found.'); return; }
+
+        overlay.style.display = 'flex';
+
+        document.querySelectorAll('.print-only').forEach(function(el){
+            el.style.display = 'block';
+        });
+        document.querySelectorAll('.no-print').forEach(function(el){
+            el.style.display = 'none';
+        });
+        element.classList.remove('edit-mode');
+
+        var opt = {
+            margin:      [10, 10, 10, 10],
+            filename:    filename,
+            image:       { type: 'jpeg', quality: 0.97 },
+            html2canvas: {
+                scale:       2,
+                useCORS:     true,
+                logging:     false,
+                windowWidth: 1100
+            },
+            jsPDF: {
+                unit:        'mm',
+                format:      'a4',
+                orientation: 'portrait'
+            },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf()
+            .set(opt)
+            .from(element)
+            .save()
+            .then(function () {
+                document.querySelectorAll('.print-only').forEach(function(el){
+                    el.style.display = '';
+                });
+                document.querySelectorAll('.no-print').forEach(function(el){
+                    el.style.display = '';
+                });
+                overlay.style.display = 'none';
+            })
+            .catch(function (err) {
+                console.error('PDF error:', err);
+                document.querySelectorAll('.print-only').forEach(function(el){
+                    el.style.display = '';
+                });
+                document.querySelectorAll('.no-print').forEach(function(el){
+                    el.style.display = '';
+                });
+                overlay.style.display = 'none';
+                alert('PDF generation failed. Try the Print button instead.');
+            });
+    }
+
+    ['downloadPdfBtn', 'downloadPdfBtn2'].forEach(function (id) {
+        var btn = document.getElementById(id);
+        if (btn) btn.addEventListener('click', downloadPDF);
+    });
+
+})();
+</script>
+
+</body>
+</html>
