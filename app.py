@@ -48,7 +48,7 @@ COLLEGE_NAME = "Bharathidasan Government College for Women"
 # ─── MySQL connection settings — edit these to match your MySQL Workbench ────
 DB_HOST = "localhost"
 DB_USER = "root"
-DB_PASSWORD = "mysql2005"       # <-- change to your MySQL root password
+DB_PASSWORD = "YOUR_PASSWORD"       # <-- change to your MySQL root password
 DB_NAME = "attendance_system"
 # ─────────────────────────────────────────────────────────────────────────────
 
